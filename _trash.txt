@@ -1,0 +1,33 @@
+  // import { io } from 'socket.io-client';
+  
+  // const [messages, setMessages] = useState([
+
+  // ]);
+
+  // useEffect(() => {
+  //   const socket = io("ws://10.149.152.77:4000");
+
+  //   socket.on('connect' , ()=>{
+  //     console.log("Connected to server");
+  //   })
+  
+  //   socket.on('disconnect', ()=>{
+  //     console.log("Disconnected from server");
+  //   })
+  
+  //   socket.on("onMessage", (data)=>{
+  //     console.log("Message:" + data);
+  //   })
+  
+  //   socket.on('error', (error) => {
+  //     console.error('WebSocket error:', error);
+  //   });
+
+  //   socket.emit("newMessage",{body:"Hello!"});
+
+  //   return () => {
+  //     if(socket){
+  //       socket.disconnect();
+  //     }
+  //   };
+  // }, []);

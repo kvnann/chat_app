@@ -1,46 +1,27 @@
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  Easing,
-} from "react-native-reanimated";
-import { View, Button } from "react-native";
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+const Stack = createStackNavigator();
 
-export default function AnimatedStyleUpdateExample(props) {
-  const randomWidth = useSharedValue(10);
+import { Login } from './screens/Auth/index'
+import Home from './screens/Home/Home';
+import Chat from './screens/Chat/Chat';
 
-  const config = {
-    duration: 500,
-    easing: Easing.bezier(0.5, 0.01, 0, 1),
-  };
-
-  const style = useAnimatedStyle(() => {
-    return {
-      width: withTiming(randomWidth.value, config),
-    };
-  });
-
+export default function App() {
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
-      <Animated.View
-        style={[
-          { width: 100, height: 80, backgroundColor: "black", margin: 30 },
-          style,
-        ]}
-      />
-      <Button
-        title="toggle"
-        onPress={() => {
-          randomWidth.value = Math.random() * 350;
-        }}
-      />
-    </View>
+  <NavigationContainer>
+    <Stack.Navigator initialRouteName={"login"}>
+      <Stack.Screen name="home" options={{
+        headerShown:false,
+      }} component={Home}/>
+
+      <Stack.Screen name="chat" options={{
+        headerShown:false,
+      }} component={Chat}/>
+
+      <Stack.Screen name="login" options={{
+        headerShown:false,
+      }} component={Login}/>
+    </Stack.Navigator>
+  </NavigationContainer>
   );
 }

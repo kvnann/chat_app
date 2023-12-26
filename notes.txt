@@ -1,0 +1,2 @@
+1.  Importing styles from assets every time bothers me. That's why I put a js file inside /assets/styled folder that will export all style scripts and export it. 
+    One 'listener' in 'screens/index' gets styles and export them as they are.
