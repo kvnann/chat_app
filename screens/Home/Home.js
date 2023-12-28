@@ -8,8 +8,9 @@ import Account from '../Account/Account';
 import { useNavigation } from '@react-navigation/native'
 
 import { TabBarAnimationIcon } from './components/AnimationIcons';
-import { getAuthAsync } from '../../lib/handlers/auth';
-import { setSavedUser } from '../../lib/handlers';
+import { getAuthAsync } from '../../lib/handlers/auth.handlers';
+import { saveSavedUser } from '../../lib/handlers';
+import { saveAuthUser } from '../../lib/handlers/storage.handlers';
 
 const Tab = createBottomTabNavigator();
 
@@ -55,7 +56,7 @@ const Home = () => {
         }
       }
       setUserData(response.data);
-      await setSavedUser(response.data);
+      await saveAuthUser(response.data);
       return;
     });
   }

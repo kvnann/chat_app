@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Keyboard } from 'react-native'
 import MessageComponent from './MessageComponent'
 import { colors, createRandomString, optimizeHeight, optimizeWidth } from '../../../../lib/helpers'
 
-const Messages = ({  handleScroll, messages, myData, partnerData, scrollViewRef }) => {
+const Messages = ({  handleScroll, messages, authUser, friendData, scrollViewRef }) => {
 
   return (
     <ScrollView
@@ -35,7 +35,7 @@ const Messages = ({  handleScroll, messages, myData, partnerData, scrollViewRef 
                   </View>
                 }
 
-                return <MessageComponent key={message.messageID} messageData={message} sentByMe={message.sentBy === myData.tag} partnerData={partnerData}/>
+                return <MessageComponent key={message.messageID} messageData={message} sentByMe={message.sentBy === authUser.username} friendData={friendData}/>
             }) : <View style={{
                 display:'flex',
                 marginTop:optimizeHeight(30),

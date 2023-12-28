@@ -10,10 +10,11 @@ const ChatsComponent = ({ chatsData, authUser }) => {
     <ScrollView style={{
       marginTop:optimizeHeight(10)
     }}>
-      {(chatsData && authUser) && 
+      {(chatsData && authUser) ?
         chatsData.map(chatData=>{
           return <ChatComponent key={chatData.chatID} chatData={chatData} authUser={authUser}/>
-        })
+        }):
+        <View></View>
       }
 
     </ScrollView>

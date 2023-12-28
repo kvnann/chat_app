@@ -9,6 +9,8 @@ import MessageBox from './components/MessageBox/MessageBox';
 import Messages from './components/Messages/Messages';
 
 import { Audio } from 'expo-av';
+import { getOneLoadedChat } from '../../lib/handlers/storage/loadedChats.storage';
+import { getAuthUser, getOneLoadedUser } from '../../lib/handlers/storage.handlers';
 
 const Chat = () => {
   const navigation = useNavigation();
@@ -36,8 +38,8 @@ const Chat = () => {
   //     : undefined;
   // }, [sound]);
   
-  const [partnerData, setPartnerData] = useState(null);
-  const [myData, setMyData] = useState(null);
+  const [friendData, setFriendData] = useState(null);
+  const [authUserData, setAuthUserData] = useState(null);
   const [chatData, setChatData] = useState(null);
 
   //
@@ -76,26 +78,49 @@ const Chat = () => {
       }, 100);
   },[])
 
-  //
-  
-  useEffect(() => {
+  // useEffect(() => {
+  //   const savedUserData = getSavedUserData();
+  //   setAuthUserData(savedUserData);
 
-    const savedUserData = getSavedUserData();
-    setMyData(savedUserData);
-
-    const selectedUser = getUserData(params?.tag);
-    setPartnerData(selectedUser);
+  //   const selectedUser = getUserData(params?.tag);
+  //   setFriendData(selectedUser);
     
-    let selectedChat = getChatData(params?.chatID);
+  //   let selectedChat = getChatData(params?.chatID);
 
-    const messagesSorted = messageParsing(selectedChat?.messages);
+  //   const messagesSorted = messageParsing(selectedChat?.messages);
 
-    selectedChat = {...selectedChat, messages:messagesSorted}
+  //   selectedChat = {...selectedChat, messages:messagesSorted}
 
-    setChatData(selectedChat ? selectedChat:{
+  //   setChatData(selectedChat ? selectedChat:{
+  //     messages:[]
+  //   });
+  // }, []);
+
+  const getInitialData = async()=>{
+    let savedChatData = await getOneLoadedChat(params?.chatID);
+    const authUser = await getAuthUser();
+    if(!savedChatData?.isGroup){
+      const friendUsername = !savedChatData?.isGroup ? JSON.parse(savedChatData.participants).filter(p=>p!==authUser?.username)[0] : null;
+      if(!friendUsername){
+        return;
+      }
+      const savedFriendData = await getOneLoadedUser(friendUsername);
+      setFriendData(savedFriendData);
+    }
+    setAuthUserData(authUser);
+
+    const messagesSorted = messageParsing(savedChatData?.messages);
+
+    savedChatData = {...savedChatData, messages:messagesSorted}
+
+    setChatData(savedChatData? savedChatData:{
       messages:[]
     });
-  }, []);
+  }
+
+  useEffect(()=>{
+    getInitialData()
+  },[])
 
   const handleSendMessage = (messageData)=>{
     let newChatData = {...chatData};
@@ -115,7 +140,7 @@ const Chat = () => {
       border:"none"
     }]}>
 
-        <ChatHeader partnerData={partnerData}/>
+        <ChatHeader friendData={friendData}/>
 
         <View
           style={{
@@ -137,10 +162,10 @@ const Chat = () => {
                 marginTop:optimizeHeight(100),
                 flex:1,
               }}>
-                <Messages scrollViewRef={scrollViewRef} handleScroll={handleScroll} myData={myData} messages={chatData?.messages} partnerData={partnerData}/>
+                <Messages scrollViewRef={scrollViewRef} handleScroll={handleScroll} authUser={authUserData} messages={chatData?.messages} friendData={friendData}/>
               </View>
 
-              <MessageBox tag={myData?.tag} sendMessage={handleSendMessage}/>
+              <MessageBox username={authUserData?.username} sendMessage={handleSendMessage}/>
             
             </KeyboardAvoidingView>
           </View>

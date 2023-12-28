@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Image } from 'react-native'
-import { colors, getHoursAndMinutes, optimizeHeight, optimizeWidth, sortArrayByTime } from '../../../../lib/helpers'
+import { colors, createDataURI, getHoursAndMinutes, optimizeHeight, optimizeWidth, sortArrayByTime } from '../../../../lib/helpers'
+import default_pp from '../../../../assets/base64/default_pp'
 
-const MessageComponent = ({ messageData, sentByMe, partnerData }) => {
+const MessageComponent = ({ messageData, sentByMe, friendData }) => {
 
     useEffect(()=>{
     },[])
@@ -32,7 +33,7 @@ const MessageComponent = ({ messageData, sentByMe, partnerData }) => {
                 }}>
                     {
                         (messageData?.existsInARow && messageData?.lastInTheRow) || !messageData?.existsInARow ?
-                        <Image source={{uri:partnerData?.pp}} style={{
+                        <Image source={{uri:createDataURI(friendData?.pp ?? default_pp)}} style={{
                             width:optimizeWidth(25),
                             height:optimizeWidth(25),
                             borderRadius:999
@@ -75,11 +76,10 @@ const MessageComponent = ({ messageData, sentByMe, partnerData }) => {
                     justifyContent:'flex-end'
                 }}>
                     <Text style={{
-                        color:sentByMe ? colors.MUTED_LIGHT: colors.MUTED_DARK,
+                        color:sentByMe ? colors.PRIMARY_EXTRALIGHT: colors.MUTED_DARK,
                         fontSize:optimizeWidth(12),
-                    }}>{getHoursAndMinutes(messageData.time)}</Text>
+                    }}>{getHoursAndMinutes(messageData.timeSent)}</Text>
                 </View>
-                
             </View>
         </View>
     </View>

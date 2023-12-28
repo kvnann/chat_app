@@ -3,7 +3,7 @@ import { Keyboard, KeyboardAvoidingView, Text, TextInput, TouchableWithoutFeedba
 import { colors, optimizeHeight, optimizeWidth } from '../../../lib/helpers'
 import { styles } from '../../assets';
 import { PrimaryButton } from '../../components';
-import { getAuthAsync, loginAsync } from '../../../lib/handlers/auth';
+import { getAuthAsync, loginAsync } from '../../../lib/handlers/auth.handlers';
 import { useNavigation } from '@react-navigation/native'
 import { getUserDataAsync, saveTokensAsync } from '../../../lib/handlers';
 

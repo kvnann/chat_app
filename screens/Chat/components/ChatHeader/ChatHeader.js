@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { SafeAreaView, View, Text, TouchableOpacity, StatusBar, Image, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView, Animated } from 'react-native'
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import { styles } from '../../../assets'
-import { optimizeHeight, optimizeWidth, colors, lastSeenString } from '../../../../lib/helpers'
+import { optimizeHeight, optimizeWidth, colors, lastSeenString, createDataURI } from '../../../../lib/helpers'
 import {ChatsComponent} from '../../../components'
 import { useNavigation } from '@react-navigation/native'
 import { useRoute } from '@react-navigation/native';
@@ -11,7 +11,7 @@ import { getUserData } from '../../../../lib/handlers'
 import default_pp from '../../../../assets/base64/default_pp'
 import { InfiniteAnimationIcon } from '../../../components/animations/animations'
 
-const ChatHeader = ({partnerData}) => {
+const ChatHeader = ({ friendData }) => {
   const navigation = useNavigation();
 
   return (
@@ -51,7 +51,7 @@ const ChatHeader = ({partnerData}) => {
               <View style={{
                 marginLeft:optimizeWidth(8)
               }}>
-                <Image source={{uri: partnerData?.pp ? partnerData?.pp : default_pp}} style={{
+                <Image source={{uri:createDataURI(friendData?.pp ?? default_pp)}} style={{
                   width:45,
                   height:45,
                   borderRadius:999
@@ -68,12 +68,15 @@ const ChatHeader = ({partnerData}) => {
                   color:colors.WHITE,
                   fontWeight:600,
                   fontSize:optimizeWidth(18)
-                }}>{partnerData?.name}</Text>
+                }}>{friendData?.firstName} {friendData?.lastName}</Text>
                 <Text style={{
                   color:colors.MUTED,
                   marginTop:optimizeHeight(3),
                   fontSize:optimizeWidth(13)
-                }}>last online {lastSeenString(partnerData?.lastSeen)}</Text>
+                }}>
+                last seen today 12:33
+                {/* {lastSeenString(friendData?.lastSeen)} */}
+                </Text>
               </View>
             </View>
 

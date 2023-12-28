@@ -6,45 +6,56 @@ import { PrimaryLink, SuggestedUserComponents, PrimaryButton, GroupComponents } 
 import { getSavedUserData, getSavedSettingsComponentsData, getUserDataAsync } from '../../lib/handlers'
 import default_pp from '../../assets/base64/default_pp'
 import default_bi from '../../assets/base64/default_bi'
+import { getAuthUser } from '../../lib/handlers/storage.handlers'
+import { getUserPhotos } from '../../lib/handlers/chats.handlers'
+import { getAuthAsync } from '../../lib/handlers/auth.handlers'
 
 const Account = () => {
 
   const [userData, setUserData] = useState(null);
-  let authCompleted = false;
+  let authStarted = false;
 
   const getSavedUserDataAsync = async()=>{
-    if(authCompleted){
-      return true;
-    }
-    const savedData = await getUserDataAsync();
+    const savedData = await getAuthUser();
     if(!savedData){
-      return false;
+      return;
     }
-    setUserData({...savedData});
-    authCompleted = true;
-  }
 
+    setUserData(savedData);
+  }
+  const loadNewUserData = async()=>{
+    if(authStarted){
+      return;
+    }
+    authStarted = true;
+    await getAuthAsync((err,response)=>{
+      if(err){
+        console.log(err)
+      }
+      setUserData({...userData, ...response.data});
+      getUserPhotos(response.data?.username, async(err,res)=>{
+        if(err){
+          console.log(err)
+        }
+        setUserData({...response.data, pp:res.data.pp, backgroundImage:res.data?.backgroundImage});
+      });
+    });
+  }
   useEffect(() => {
     getSavedUserDataAsync();
+    loadNewUserData();
   }, [])
 
   const handleEdit = ()=>{
     console.log("Edit triggered");
   } 
 
-  const [savedUserData, setSavedUserData] = useState(null);
-
-  useEffect(()=>{
-    const getUser = getSavedUserData();
-    setSavedUserData(getUser);
-  },[savedUserData]);
-
   const [settingsComponentsData, setSettingsComponentsData] = useState(null);
 
   useEffect(()=>{
     const savedSettingsComponentsData = getSavedSettingsComponentsData();
     setSettingsComponentsData(savedSettingsComponentsData);
-  },[savedUserData]);
+  },[userData]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -69,23 +80,14 @@ const Account = () => {
           <View style={[{
             marginTop:optimizeHeight(10),
           }]}>
-            {savedUserData?.backgroundImage ? 
               <Image source={{
-                uri:userData?.backgroundImage ? createDataURI(userData.backgroundImage) : default_bi
+                uri:createDataURI(userData?.backgroundImage ?? default_bi)
               }} style={{
                 width:"100%",
                 height:optimizeHeight(235),
                 borderRadius:optimizeWidth(20),
                 zIndex:-1,
-              }}/> :
-              <View style={{
-                width:"100%",
-                height:optimizeHeight(235),
-                borderRadius:optimizeWidth(20),
-                zIndex:-1,
-                backgroundColor:colors.PRIMARY_LIGHT
               }}/>
-          }
           </View>
 
           <View style={{
@@ -96,7 +98,7 @@ const Account = () => {
             
           }}>
             <Image source={{
-              uri: createDataURI(userData?.pp ? userData.pp : default_pp)
+              uri: createDataURI(userData?.pp ?? default_pp)
             }} style={{
               width:optimizeHeight(150),
               height:optimizeHeight(150),

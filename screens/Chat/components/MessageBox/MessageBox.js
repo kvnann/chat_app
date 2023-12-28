@@ -7,7 +7,7 @@ import { useRoute } from '@react-navigation/native';
 import { SendIcon } from '../../../../assets/icons'
 import { InfiniteAnimationIcon } from '../../../components/animations/animations'
 
-const MessageBox = ({sendMessage, tag}) => {
+const MessageBox = ({sendMessage, username}) => {
   
     const [messageValue, setMessageValue] = useState(null);
   
@@ -38,9 +38,10 @@ const MessageBox = ({sendMessage, tag}) => {
       }
       const messageObject = {
         text:messageValue,
-        time:new Date(),
+        timeSent:new Date(),
         messageID:createRandomString(20),
-        sentBy:tag
+        sentBy:username,
+        replyTo:null
       }
 
       sendMessage(messageObject);

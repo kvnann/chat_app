@@ -6,7 +6,8 @@ import { optimizeHeight, optimizeWidth, colors, openChat, createDataURI, isYeste
 import SeenIcon from '../../../assets/icons/seen_icon.svg'
 import { useNavigation } from '@react-navigation/native'
 import default_pp from '../../../assets/base64/default_pp'
-import { getOneLoadedUser } from '../../../lib/handlers/storage'
+import { getOneLoadedUser, updateLoadedUserData } from '../../../lib/handlers/storage.handlers'
+import { getUserPhotos } from '../../../lib/handlers/chats.handlers'
 
 
 const ChatComponent = ({ chatData, authUser }) => {
@@ -23,9 +24,16 @@ const ChatComponent = ({ chatData, authUser }) => {
       if(!friendUsername){
         return;
       }
-      const fetchedFriendData = await getOneLoadedUser(friendUsername);
-      console.log(typeof(lastMessage?.timeSent) == 'string')
+      let fetchedFriendData = await getOneLoadedUser(friendUsername);
       setFriendData(fetchedFriendData);
+      await getUserPhotos(fetchedFriendData?.username, async(err,response)=>{
+        if(err){
+          console.log(err.messages);
+          return;
+        }
+        setFriendData({...fetchedFriendData, pp: response.data.pp, backgroundImage: response.data.backgroundImage});
+        return;
+      });
     }
   }
 
@@ -33,14 +41,12 @@ const ChatComponent = ({ chatData, authUser }) => {
     if(chatData){
       fetchFriendData();
       const lastMessageData = chatData.messages[chatData.messages.length-1]
-      console.log(lastMessageData)
       setLastMessage(lastMessageData)
     }
   }, [])
 
   const handleChatPress = ()=>{
-    // openChat(data?.tag, navigation);
-    console.log("clicked me");
+    openChat(chatData?.chatID, navigation);
   }
 
   return (
@@ -67,7 +73,7 @@ const ChatComponent = ({ chatData, authUser }) => {
         }
 
           <View>
-            <Image source={{uri:createDataURI(default_pp)}} style={{
+            <Image source={{uri:createDataURI(friendData?.pp ?? default_pp)}} style={{
               width:optimizeWidth(50),
               height:optimizeWidth(50),
               borderRadius:999

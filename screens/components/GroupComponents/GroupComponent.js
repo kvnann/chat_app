@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TouchableWithoutFeedback, TouchableHighli
 import { colors, optimizeHeight, optimizeWidth } from '../../../lib/helpers'
 import { ChevronRightIcon } from '../../../assets/icons'
 import { useNavigation } from '@react-navigation/native'
+import { handleLogout } from '../../../lib/handlers/auth.handlers'
 
 
 const GroupComponent = ({ componentData, last, first }) => {
@@ -12,7 +13,7 @@ const GroupComponent = ({ componentData, last, first }) => {
 
     <TouchableHighlight onPress={()=>{
         if(componentData?.linkTo === 'logout'){
-            navigation.replace("login");
+            handleLogout(navigation);
         }
     }} style={{
         borderTopLeftRadius:first ? optimizeWidth(20) : 0,

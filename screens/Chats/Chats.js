@@ -2,9 +2,9 @@ import React, {useState, useEffect} from 'react'
 import { SafeAreaView, View, Text, TouchableOpacity } from 'react-native'
 import { styles } from '../assets'
 import { optimizeHeight, optimizeWidth, colors } from '../../lib/helpers'
-import {ChatsComponent} from '../components'
+import { ChatsComponent } from '../components'
 import { getAllSavedUsersData } from '../../lib/handlers'
-import { getInitialData } from '../../lib/handlers/chats'
+import { getInitialData } from '../../lib/handlers/chats.handlers'
 import { useNavigation } from '@react-navigation/native'
 
 
@@ -18,6 +18,8 @@ const Chats = () => {
   const [loadedUsersData, setLoadedUsersData] = useState(null);
   const [authUserData, setAuthUserData] = useState(null);
   let initialDataFetched = false;
+  let initialStorageFetched = false;
+  
 
   useEffect(()=>{
     const savedUsersData = getAllSavedUsersData();
@@ -31,7 +33,7 @@ const Chats = () => {
     initialDataFetched = true;
     setLoading(true);
 
-    await getInitialData(async(err,response)=>{
+    await getInitialData(true, async(err,response)=>{
       if(err){
         setErrorMessage(err.message);
         return;
@@ -44,7 +46,27 @@ const Chats = () => {
     return;
   }
 
+  const fetchInitialDataFromAsyncStorage = async()=>{
+    if(initialStorageFetched){
+      return;
+    }
+    initialStorageFetched = true;
+    setLoading(true);
+
+    await getInitialData(false, async(err,response)=>{
+      if(err){
+        setErrorMessage(err.message);
+        return;
+      }
+      setLoadedChatsData(await response.data.chatsData);
+      setAuthUserData(await response.data.userData);
+      return;
+    });
+    return;
+  }
+
   useEffect(() => {
+    fetchInitialDataFromAsyncStorage();
     fetchInitialDataAsync();
   }, [])
   
@@ -84,8 +106,6 @@ const Chats = () => {
         </View>
 
         <ChatsComponent allUsersData={allUsersData} chatsData={loadedChatsData} authUser={authUserData}/>
-
-        
 
     </SafeAreaView>
   )
