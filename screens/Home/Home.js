@@ -11,6 +11,7 @@ import { TabBarAnimationIcon } from './components/AnimationIcons';
 import { getAuthAsync } from '../../lib/handlers/auth.handlers';
 import { saveSavedUser } from '../../lib/handlers';
 import { saveAuthUser } from '../../lib/handlers/storage.handlers';
+import { getUserPhotos } from '../../lib/handlers/chats.handlers';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,10 +19,10 @@ const Home = () => {
   const navigation = useNavigation();
 
   let authCompleted=false;
-  const [userData, setUserData] = useState(null);
+  // const [userData, setUserData] = useState(null);
 
   // useState(()=>{
-  //   setInterval(()=>{console.log("salam")},5000)
+  //   setInterval(()=>{console.log("salam")},3*60*1000)
   // },[]);
 
   const setAuthFuncitonAsync = async()=>{
@@ -32,7 +33,6 @@ const Home = () => {
     await getAuthAsync(async(err,response)=>{
       if(err){
         if(err?.response?.data){
-          console.log(err.response.data);
           navigation.replace("login");
           return;
         }
@@ -42,20 +42,14 @@ const Home = () => {
         navigation.replace("login");
         return;
       }
-      if(response.data.newAccessToken){
-        const isDataSaved = await saveTokensAsync(accessToken);
-        if(isDataSaved){
-          setLoading(false);
-          setAuthFuncitonAsync();
-          return;
+      getUserPhotos(response.data?.username, async(err,res)=>{
+        if(err){
+          console.log(err)
+          return; 
         }
-        else{
-          setErrorMessage("Unknown error occured, please try again");
-          setLoading(false);
-          return;
-        }
-      }
-      setUserData(response.data);
+        // setUserData({...response.data, pp:res.data.pp, backgroundImage:res.data?.backgroundImage});
+      });
+      // setUserData(response.data);
       await saveAuthUser(response.data);
       return;
     });
@@ -112,7 +106,7 @@ const Home = () => {
         },
         tabBarActiveTintColor: colors.PRIMARY_TEXT,
         tabBarInactiveTintColor: colors.MUTED,
-    })}>
+    })}  initialRouteName="Chats">
         <Tab.Screen name="Explore" component={Explore}/>
         <Tab.Screen name="Chats" component={Chats}/>
         <Tab.Screen name="Account" component={Account}/>

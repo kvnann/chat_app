@@ -3,7 +3,7 @@ import { View, KeyboardAvoidingView, Keyboard } from 'react-native'
 import { optimizeHeight, colors, messageParsing } from '../../lib/helpers'
 import { useNavigation } from '@react-navigation/native'
 import { useRoute } from '@react-navigation/native';
-import { getUserData, getChatData, getSavedUserData } from '../../lib/handlers'
+import { getUserData, getChatData } from '../../lib/handlers'
 import ChatHeader from './components/ChatHeader/ChatHeader';
 import MessageBox from './components/MessageBox/MessageBox';
 import Messages from './components/Messages/Messages';
@@ -44,11 +44,11 @@ const Chat = () => {
 
   //
   const scrollViewRef = useRef();
-  const [percentScrolled, setPercentScrolled] = useState(100)
+  const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 })
 
   const handleScroll = (event) => {
-    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-    setPercentScrolled((contentOffset.y / (contentSize.height - layoutMeasurement.height)) * 100);
+    const { contentOffset } = event.nativeEvent;
+    setScrollPosition({ x: contentOffset.x, y: contentOffset.y });
   };
   
   const scrollToBottom = (animated, noDelay) => {
@@ -59,42 +59,28 @@ const Chat = () => {
       }
   };
 
+  const scrollToPosition = (yCoord, isAnimated) => {
+    scrollViewRef.current.scrollTo({ x: 0, y: yCoord, animated: isAnimated });
+  };
+
   useEffect(() => {
       const keyboardDidShowListener = Keyboard.addListener(
         'keyboardDidShow',
         () => {
-          scrollToBottom(true,true);
+          // scrollToPosition(scrollPosition.y + 500)
         }
       );
   
       return () => {
         keyboardDidShowListener.remove();
       };
-  }, [percentScrolled]);
+  }, [scrollPosition]);
 
   useEffect(()=>{
       setTimeout(() => {
-          scrollToBottom(false)
+        scrollToPosition(1050,false)
       }, 100);
-  },[])
-
-  // useEffect(() => {
-  //   const savedUserData = getSavedUserData();
-  //   setAuthUserData(savedUserData);
-
-  //   const selectedUser = getUserData(params?.tag);
-  //   setFriendData(selectedUser);
-    
-  //   let selectedChat = getChatData(params?.chatID);
-
-  //   const messagesSorted = messageParsing(selectedChat?.messages);
-
-  //   selectedChat = {...selectedChat, messages:messagesSorted}
-
-  //   setChatData(selectedChat ? selectedChat:{
-  //     messages:[]
-  //   });
-  // }, []);
+  },[]);
 
   const getInitialData = async()=>{
     let savedChatData = await getOneLoadedChat(params?.chatID);
@@ -119,7 +105,7 @@ const Chat = () => {
   }
 
   useEffect(()=>{
-    getInitialData()
+    getInitialData();
   },[])
 
   const handleSendMessage = (messageData)=>{
@@ -162,7 +148,7 @@ const Chat = () => {
                 marginTop:optimizeHeight(100),
                 flex:1,
               }}>
-                <Messages scrollViewRef={scrollViewRef} handleScroll={handleScroll} authUser={authUserData} messages={chatData?.messages} friendData={friendData}/>
+                <Messages scrollViewRef={scrollViewRef} handleScroll={handleScroll} scrollPosition={scrollPosition} authUser={authUserData} messages={chatData?.messages} friendData={friendData}/>
               </View>
 
               <MessageBox username={authUserData?.username} sendMessage={handleSendMessage}/>

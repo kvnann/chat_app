@@ -6,6 +6,7 @@ import { ChatsComponent } from '../components'
 import { getAllSavedUsersData } from '../../lib/handlers'
 import { getInitialData } from '../../lib/handlers/chats.handlers'
 import { useNavigation } from '@react-navigation/native'
+import { getLoadedChats } from '../../lib/handlers/storage.handlers'
 
 
 const Chats = () => {
@@ -36,6 +37,7 @@ const Chats = () => {
     await getInitialData(true, async(err,response)=>{
       if(err){
         setErrorMessage(err.message);
+        console.log(err)
         return;
       }
       setLoadedChatsData(response.data.chatsData);
@@ -104,8 +106,11 @@ const Chats = () => {
             Chats
           </Text>
         </View>
-
-        <ChatsComponent allUsersData={allUsersData} chatsData={loadedChatsData} authUser={authUserData}/>
+        <View style={{
+          flex:1
+        }}>
+          <ChatsComponent allUsersData={allUsersData} chatsData={loadedChatsData} authUser={authUserData}/>
+        </View>
 
     </SafeAreaView>
   )

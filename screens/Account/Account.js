@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView, Image } from 'react-native'
+import { SafeAreaView, View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image } from 'react-native'
 import { styles } from '../assets'
 import { optimizeHeight, optimizeWidth, colors, createDataURI } from '../../lib/helpers'
-import { PrimaryLink, SuggestedUserComponents, PrimaryButton, GroupComponents } from '../components'
-import { getSavedUserData, getSavedSettingsComponentsData, getUserDataAsync } from '../../lib/handlers'
+import { PrimaryLink, GroupComponents } from '../components'
+import { getSavedSettingsComponentsData, getUserDataAsync } from '../../lib/handlers'
 import default_pp from '../../assets/base64/default_pp'
 import default_bi from '../../assets/base64/default_bi'
 import { getAuthUser } from '../../lib/handlers/storage.handlers'
@@ -20,7 +20,6 @@ const Account = () => {
     if(!savedData){
       return;
     }
-
     setUserData(savedData);
   }
   const loadNewUserData = async()=>{
@@ -32,10 +31,10 @@ const Account = () => {
       if(err){
         console.log(err)
       }
-      setUserData({...userData, ...response.data});
       getUserPhotos(response.data?.username, async(err,res)=>{
         if(err){
           console.log(err)
+          return; 
         }
         setUserData({...response.data, pp:res.data.pp, backgroundImage:res.data?.backgroundImage});
       });

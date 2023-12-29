@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Keyboard, KeyboardAvoidingView, Text, TextInput, TouchableWithoutFeedback, View, Button, StyleSheet, SafeAreaView } from 'react-native'
+import { Keyboard, KeyboardAvoidingView, Text, TextInput, TouchableWithoutFeedback, View, Button, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native'
 import { colors, optimizeHeight, optimizeWidth } from '../../../lib/helpers'
 import { styles } from '../../assets';
 import { PrimaryButton } from '../../components';
-import { getAuthAsync, loginAsync } from '../../../lib/handlers/auth.handlers';
+import { getAuthAsync, loginAsync, registerAsync } from '../../../lib/handlers/auth.handlers';
 import { useNavigation } from '@react-navigation/native'
 import { getUserDataAsync, saveTokensAsync } from '../../../lib/handlers';
 
@@ -37,7 +37,7 @@ const Login = () => {
       setLoading(false);
       return;
     }
-    await loginAsync(username,password,async(err,response)=>{
+    await loginAsync(username,password, async(err,response)=>{
       if(err){
         setErrorMessage(err.message);
         setLoading(false);
@@ -53,7 +53,6 @@ const Login = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={0}
       style={{
         flex:1,
         backgroundColor:colors.PRIMARY_DARK
@@ -75,8 +74,8 @@ const Login = () => {
             <View>
               <TextInput
                 style={[styles.main.input, {
-                  marginTop:optimizeHeight(40),
-                  fontSize:optimizeWidth(17)
+                  fontSize:optimizeWidth(17),
+                  marginTop:optimizeHeight(40)
                 }]}
                 placeholder={'Username'}
                 placeholderTextColor={colors.MUTED}
@@ -112,6 +111,15 @@ const Login = () => {
             }} textMoreStyle={{
               fontSize:optimizeWidth(16)
             }} text={"Login"} loading={loading} onPress={handleLogin}/>
+
+            <Text style={{
+              color:colors.WHITE,
+              marginTop:optimizeHeight(30)
+            }} >
+              Dont't have an account? <TouchableWithoutFeedback onPress={()=>{
+                navigation.replace('register')
+              }}><Text style={{color:colors.PRIMARY_TEXT}}>Register here!</Text></TouchableWithoutFeedback>
+            </Text>
           </View>
           <View></View>
         </SafeAreaView>
